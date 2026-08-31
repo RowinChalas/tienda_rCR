@@ -20,6 +20,7 @@ export interface StorefrontProduct {
   dimensions: { width: number; height: number; depth: number };
   /** ≥1 imágenes; la primera es el thumbnail principal */
   images: string[];
+  imageUrl?: string;
   /** Imagen de fondo/ambiente para el 3D viewer */
   ambientImage?: string;
   isNew?: boolean;

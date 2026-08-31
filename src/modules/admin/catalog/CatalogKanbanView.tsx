@@ -8,6 +8,7 @@ import { PublicationChecklistModal } from './PublicationChecklistModal';
 import { WhatsAppIngestSimulatorModal } from './WhatsAppIngestSimulatorModal';
 import { PublicationChecklist } from '../../../domain/validation/PublicationChecklist';
 import { ProductCreateModal } from '../products/ProductCreateModal';
+import { ProductEditModal } from '../products/ProductEditModal';
 import {
   Wand2,
   Sparkles,
@@ -17,6 +18,7 @@ import {
   AlertTriangle,
   MessageSquare,
   Plus,
+  Edit2,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -26,6 +28,7 @@ export const CatalogKanbanView: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [activeImageProduct, setActiveImageProduct] = useState<Product | null>(null);
   const [activeChecklistProduct, setActiveChecklistProduct] = useState<Product | null>(null);
+  const [activeEditProduct, setActiveEditProduct] = useState<Product | null>(null);
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
   const [isManualCreateOpen, setIsManualCreateOpen] = useState(false);
 
@@ -359,50 +362,63 @@ export const CatalogKanbanView: React.FC = () => {
                         </button>
                       </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex items-center justify-between pt-1 gap-2">
-                        {col.id === 'crudo' && (
-                          <Button
-                            variant="secondary"
-                            size="xs"
-                            fullWidth
-                            leftIcon={<Wand2 className="w-3.5 h-3.5" />}
-                            onClick={() => setActiveImageProduct(prod)}
-                            style={{ backgroundColor: 'var(--admin-badge-bg)', color: 'var(--admin-text-primary)', border: '1px solid var(--admin-border)' }}
-                          >
-                            Procesar Foto
-                          </Button>
-                        )}
+                      {/* Action Buttons & Quick Edit */}
+                      <div className="flex flex-col gap-2 pt-1">
+                        <div className="flex items-center gap-2">
+                          {col.id === 'crudo' && (
+                            <Button
+                              variant="secondary"
+                              size="xs"
+                              fullWidth
+                              leftIcon={<Wand2 className="w-3.5 h-3.5" />}
+                              onClick={() => setActiveImageProduct(prod)}
+                              style={{ backgroundColor: 'var(--admin-badge-bg)', color: 'var(--admin-text-primary)', border: '1px solid var(--admin-border)' }}
+                            >
+                              Procesar Foto
+                            </Button>
+                          )}
 
-                        {(col.id === 'edicion' || col.id === 'listo') && (
-                          <Button
-                            variant={evalResult.isReadyToPublish ? 'primary' : 'outline'}
-                            size="xs"
-                            fullWidth
-                            leftIcon={
-                              evalResult.isReadyToPublish ? (
-                                <Sparkles className="w-3.5 h-3.5 text-white" />
-                              ) : (
-                                <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-                              )
-                            }
-                            onClick={() => setActiveChecklistProduct(prod)}
-                            style={evalResult.isReadyToPublish ? { background: 'var(--admin-accent)', color: 'white', border: 'none' } : { backgroundColor: 'var(--admin-badge-bg)', color: 'var(--admin-text-primary)', border: '1px solid var(--admin-border)' }}
-                          >
-                            {evalResult.isReadyToPublish
-                              ? 'Publicar (100%)'
-                              : `Checklist (${evalResult.progressPct}%)`}
-                          </Button>
-                        )}
+                          {(col.id === 'edicion' || col.id === 'listo') && (
+                            <Button
+                              variant={evalResult.isReadyToPublish ? 'primary' : 'outline'}
+                              size="xs"
+                              fullWidth
+                              leftIcon={
+                                evalResult.isReadyToPublish ? (
+                                  <Sparkles className="w-3.5 h-3.5 text-white" />
+                                ) : (
+                                  <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                                )
+                              }
+                              onClick={() => setActiveChecklistProduct(prod)}
+                              style={evalResult.isReadyToPublish ? { background: 'var(--admin-accent)', color: 'white', border: 'none' } : { backgroundColor: 'var(--admin-badge-bg)', color: 'var(--admin-text-primary)', border: '1px solid var(--admin-border)' }}
+                            >
+                              {evalResult.isReadyToPublish
+                                ? 'Publicar (100%)'
+                                : `Checklist (${evalResult.progressPct}%)`}
+                            </Button>
+                          )}
 
-                        {col.id === 'publicado' && (
-                          <div className="w-full flex items-center justify-between text-xs font-semibold px-2.5 py-1.5 rounded-lg" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                            <span className="flex items-center gap-1.5 text-[11px]">
-                              <CheckCircle2 className="w-3.5 h-3.5" /> En Catálogo
-                            </span>
-                            <span className="text-[10px]" style={{ color: 'var(--admin-text-secondary)' }}>Stock: {prod.stockQuantity}</span>
-                          </div>
-                        )}
+                          {col.id === 'publicado' && (
+                            <div className="flex-1 flex items-center justify-between text-xs font-semibold px-2.5 py-1.5 rounded-lg" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                              <span className="flex items-center gap-1 text-[10px]">
+                                <CheckCircle2 className="w-3 h-3" /> En Catálogo
+                              </span>
+                              <span className="text-[10px] font-bold">Stock: {prod.stockQuantity ?? 1}</span>
+                            </div>
+                          )}
+
+                          {/* Quick Edit Button */}
+                          <button
+                            type="button"
+                            onClick={() => setActiveEditProduct(prod)}
+                            className="p-1.5 rounded-lg border hover:border-indigo-500 text-slate-300 hover:text-white transition-colors cursor-pointer flex-shrink-0"
+                            style={{ backgroundColor: 'var(--admin-card-alt)', borderColor: 'var(--admin-border)' }}
+                            title="Editar detalles, existencias y precios"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </motion.div>
                   );
@@ -439,6 +455,14 @@ export const CatalogKanbanView: React.FC = () => {
         isOpen={isManualCreateOpen}
         onClose={() => setIsManualCreateOpen(false)}
         onProductCreated={loadProducts}
+      />
+
+      <ProductEditModal
+        isOpen={Boolean(activeEditProduct)}
+        onClose={() => setActiveEditProduct(null)}
+        product={activeEditProduct}
+        onProductUpdated={loadProducts}
+        onProductDeleted={loadProducts}
       />
     </div>
   );

@@ -1,14 +1,19 @@
 // src/pages/CatalogPage.tsx
 // Catálogo público con filtros por categoría y grilla de productos
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { SlidersHorizontal } from 'lucide-react';
 import { ProductCard } from '../modules/storefront/components/ProductCard';
 import { CATEGORIES, STOREFRONT_PRODUCTS, type StorefrontCategory, type StorefrontProduct } from '../modules/storefront/data/storefrontData';
 
+import { Tag } from '../domain/models/Tag';
+import { services } from '../services/ServiceContainer';
+
 interface CatalogPageProps {
   onProductSelect: (product: StorefrontProduct) => void;
   initialCategory?: StorefrontCategory | 'all';
+  initialSearchQuery?: string;
+  initialTag?: string;
 }
 
 type SortKey = 'featured' | 'price-asc' | 'price-desc' | 'new';
@@ -23,21 +28,72 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 export const CatalogPage: React.FC<CatalogPageProps> = ({
   onProductSelect,
   initialCategory = 'all',
+  initialSearchQuery = '',
+  initialTag = 'all',
 }) => {
   const [activeCategory, setActiveCategory] = useState<StorefrontCategory | 'all'>(initialCategory);
+  const [activeTag, setActiveTag] = useState<string>(initialTag);
+  const [searchQuery, setSearchQuery] = useState<string>(initialSearchQuery);
   const [sort, setSort] = useState<SortKey>('featured');
+  const [tags, setTags] = useState<Tag[]>([]);
+
+  // Sincronizar cuando cambia el prop initialCategory desde el Navbar u otros enlaces
+  useEffect(() => {
+    setActiveCategory(initialCategory);
+  }, [initialCategory]);
+
+  useEffect(() => {
+    setSearchQuery(initialSearchQuery);
+  }, [initialSearchQuery]);
+
+  useEffect(() => {
+    const loadTags = async () => {
+      const tgs = await services.tagRepo.getAll();
+      setTags(tgs);
+    };
+    loadTags();
+  }, []);
 
   const filtered = useMemo(() => {
-    let list = activeCategory === 'all'
-      ? STOREFRONT_PRODUCTS
-      : STOREFRONT_PRODUCTS.filter(p => p.category === activeCategory);
+    let list = STOREFRONT_PRODUCTS;
 
+    // 1. Filtrar por categoría
+    if (activeCategory !== 'all') {
+      list = list.filter((p) => p.category === activeCategory);
+    }
+
+    // 2. Filtrar por tag si está seleccionado
+    if (activeTag !== 'all') {
+      const selectedTagObj = tags.find((t) => t.id === activeTag || t.slug === activeTag);
+      if (selectedTagObj) {
+        list = list.filter(
+          (p) =>
+            selectedTagObj.productIds.includes(p.id) ||
+            (p.tags && p.tags.includes(selectedTagObj.name.toLowerCase()))
+        );
+      }
+    }
+
+    // 3. Filtrar por búsqueda de texto
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          p.materials.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          (p.tags && p.tags.some((t) => t.toLowerCase().includes(q)))
+      );
+    }
+
+    // 4. Ordenar
     if (sort === 'price-asc')  list = [...list].sort((a, b) => a.price - b.price);
     if (sort === 'price-desc') list = [...list].sort((a, b) => b.price - a.price);
     if (sort === 'new')        list = [...list].sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
 
     return list;
-  }, [activeCategory, sort]);
+  }, [activeCategory, activeTag, searchQuery, sort, tags]);
 
   return (
     <div className="sf-root min-h-screen" style={{ background: 'var(--sf-bg)' }}>
@@ -121,6 +177,52 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
             </select>
           </div>
         </div>
+
+        {/* Sub-bar: Hashtags & Active Search Filter */}
+        {(tags.length > 0 || searchQuery.trim()) && (
+          <div className="max-w-7xl mx-auto w-full pt-2.5 flex items-center justify-between gap-3 border-t border-black/5 overflow-x-auto scrollbar-none">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'var(--sf-charcoal-60)' }}>
+                Hashtags:
+              </span>
+              <button
+                onClick={() => setActiveTag('all')}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                  activeTag === 'all'
+                    ? 'bg-neutral-800 text-white font-bold'
+                    : 'bg-stone-200/60 text-stone-700 hover:bg-stone-300/80'
+                }`}
+              >
+                #todos
+              </button>
+              {tags.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTag(t.id === activeTag ? 'all' : t.id)}
+                  className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
+                    activeTag === t.id
+                      ? 'bg-brand-600 text-white font-bold shadow-sm'
+                      : 'bg-stone-200/60 text-stone-700 hover:bg-stone-300/80'
+                  }`}
+                >
+                  #{t.name}
+                </button>
+              ))}
+            </div>
+
+            {searchQuery.trim() && (
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-xs text-amber-800 flex-shrink-0">
+                <span>Búsqueda: &ldquo;<strong>{searchQuery}</strong>&rdquo;</span>
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="w-4 h-4 rounded-full bg-amber-500/20 hover:bg-amber-500/30 flex items-center justify-center text-[10px] font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Products grid */}

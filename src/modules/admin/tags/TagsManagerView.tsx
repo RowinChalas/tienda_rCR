@@ -5,6 +5,7 @@ import { services } from '../../../services/ServiceContainer';
 import { Button } from '../../../design-system/atoms/Button';
 import { Input } from '../../../design-system/atoms/Input';
 import { Modal } from '../../../design-system/molecules/Modal';
+import { getTagBadgeStyle } from '../../../design-system/utils/contrast';
 import { Tag as TagIcon, Plus, Trash2, Search, Check } from 'lucide-react';
 
 export const TagsManagerView: React.FC = () => {
@@ -285,6 +286,13 @@ export const TagsManagerView: React.FC = () => {
                 className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent"
               />
               <span className="text-xs font-mono text-slate-300">{formColor}</span>
+              
+              <div className="ml-auto flex items-center gap-2">
+                <span className="text-[10px] text-slate-400">Contraste:</span>
+                <span className="px-3 py-1 rounded-full text-xs font-bold shadow-sm" style={getTagBadgeStyle(formColor)}>
+                  #{formName.trim() || 'ejemplo'}
+                </span>
+              </div>
             </div>
           </div>
 

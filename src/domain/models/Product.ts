@@ -53,6 +53,8 @@ export interface Product {
   material?: string;
   description?: string;
   supplierCost?: SupplierCost; // Solo visible para rol Admin
+  costBase?: number;
+  priceProtected?: number;
   relatedProductIds?: string[];
   stockQuantity: number;
   logisticStatus?: LogisticStatus; // 'disponible_ya' (Inmediato) | 'jit' (24-48h) | 'bajo_pedido' (15 días)

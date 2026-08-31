@@ -12,6 +12,7 @@ import { usePlatform } from '../context/PlatformContext';
 import { useCart } from '../context/CartContext';
 import { CartDrawer } from '../modules/storefront/components/CartDrawer';
 import { ReservationCheckoutModal } from '../modules/storefront/components/ReservationCheckoutModal';
+import { SearchModal } from '../modules/storefront/components/SearchModal';
 import { STOREFRONT_PRODUCTS } from '../modules/storefront/data/storefrontData';
 
 type StorefrontView = 'landing' | 'catalog' | 'product';
@@ -26,9 +27,11 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
   const [view, setView] = useState<StorefrontView>('landing');
   const [selectedProduct, setSelectedProduct] = useState<StorefrontProduct | null>(null);
   const [catalogCategory, setCatalogCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartCheckoutOpen, setIsCartCheckoutOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,8 +40,9 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navigateCatalog = (category?: string) => {
+  const navigateCatalog = (category?: string, query?: string) => {
     setCatalogCategory(category || 'all');
+    setSearchQuery(query || '');
     setView('catalog');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -115,8 +119,9 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
           {/* Right controls */}
           <div className="flex items-center gap-3 ml-auto">
             <button
-              aria-label="Buscar"
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 transition-colors"
+              onClick={() => setIsSearchOpen(true)}
+              aria-label="Buscar productos"
+              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 transition-colors cursor-pointer"
             >
               <Search className="w-4 h-4" style={{ color: isHero ? 'white' : 'var(--sf-charcoal)' }} />
             </button>
@@ -247,6 +252,7 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
               <CatalogPage
                 onProductSelect={selectProduct}
                 initialCategory={catalogCategory as 'all'}
+                initialSearchQuery={searchQuery}
               />
             </motion.div>
           )}
@@ -346,6 +352,14 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
           onClose={() => setIsCartCheckoutOpen(false)}
         />
       )}
+
+      {/* Search Modal estilo Casamia */}
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onSelectProduct={(p) => selectProduct(p)}
+        onSearchSubmit={(q) => navigateCatalog('all', q)}
+      />
 
       {/* Dynamic Toast Feedback when adding to Cart */}
       <AnimatePresence>

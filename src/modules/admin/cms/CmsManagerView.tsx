@@ -1070,26 +1070,29 @@ export const CmsManagerView: React.FC = () => {
         <Modal
           isOpen={isSectionModalOpen}
           onClose={() => setIsSectionModalOpen(false)}
-          title={editingSection.id ? 'Editar Sección del Storefront' : 'Nueva Sección del Storefront'}
-          size="md"
+          title={editingSection.id ? `Editar Sección: ${editingSection.title}` : 'Nueva Sección del Storefront'}
+          size="4xl"
         >
-          <form onSubmit={handleSaveSectionModal} className="space-y-4">
-            <Input
-              label="Título de la Sección"
-              value={editingSection.title}
-              onChange={(e) => setEditingSection({ ...editingSection, title: e.target.value })}
-              placeholder="Ej. Las ofertas especiales de esta semana"
-              required
-            />
+          <form onSubmit={handleSaveSectionModal} className="space-y-6 max-h-[75vh] overflow-y-auto pr-1 admin-scrollbar">
+            {/* Form Fields Header */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Título de la Sección"
+                value={editingSection.title}
+                onChange={(e) => setEditingSection({ ...editingSection, title: e.target.value })}
+                placeholder="Ej. Las ofertas especiales de esta semana"
+                required
+              />
 
-            <Input
-              label="Subtítulo Descriptivo"
-              value={editingSection.subtitle || ''}
-              onChange={(e) => setEditingSection({ ...editingSection, subtitle: e.target.value })}
-              placeholder="Ej. Piezas artesanales seleccionadas"
-            />
+              <Input
+                label="Subtítulo Descriptivo"
+                value={editingSection.subtitle || ''}
+                onChange={(e) => setEditingSection({ ...editingSection, subtitle: e.target.value })}
+                placeholder="Ej. Piezas artesanales seleccionadas"
+              />
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--admin-text-secondary)' }}>
                   Tipo de Formato / Layout
@@ -1099,7 +1102,7 @@ export const CmsManagerView: React.FC = () => {
                   onChange={(e) =>
                     setEditingSection({ ...editingSection, layoutType: e.target.value as SectionLayoutType })
                   }
-                  className="w-full border rounded-xl py-2 px-3 text-xs font-medium"
+                  className="w-full border rounded-xl py-2 px-3 text-xs font-medium focus:outline-none"
                   style={{
                     backgroundColor: 'var(--admin-bg)',
                     borderColor: 'var(--admin-border)',
@@ -1121,39 +1124,212 @@ export const CmsManagerView: React.FC = () => {
               />
             </div>
 
-            {/* If tag_filtered_carousel, show tag checkboxes */}
-            {editingSection.layoutType === 'tag_filtered_carousel' && (
-              <div className="space-y-2 pt-2 border-t" style={{ borderColor: 'var(--admin-border)' }}>
+            {/* Tags Selector */}
+            <div className="space-y-2 pt-3 border-t" style={{ borderColor: 'var(--admin-border)' }}>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+                1. Hashtags Asociados a la Sección
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {availableTags.map((tag) => {
+                  const isChecked = editingSection.tagIds?.includes(tag.id);
+                  return (
+                    <button
+                      type="button"
+                      key={tag.id}
+                      onClick={() => {
+                        const current = editingSection.tagIds || [];
+                        const updated = isChecked
+                          ? current.filter((id) => id !== tag.id)
+                          : [...current, tag.id];
+                        setEditingSection({ ...editingSection, tagIds: updated });
+                      }}
+                      className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer ${
+                        isChecked ? 'bg-indigo-600 text-white border-indigo-400 shadow-sm' : 'border-slate-700 text-slate-300 hover:border-slate-500'
+                      }`}
+                    >
+                      {isChecked && <Check className="w-3 h-3" />}
+                      #{tag.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Granular Product Checkbox List */}
+            <div className="space-y-2 pt-3 border-t" style={{ borderColor: 'var(--admin-border)' }}>
+              <div className="flex items-center justify-between">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  Hashtags a Mostrar en la Sección
+                  2. Piezas y Artículos Aplicados ({editingSection.productIds?.length || STOREFRONT_PRODUCTS.length} seleccionados)
                 </label>
-                <div className="flex flex-wrap gap-2">
-                  {availableTags.map((tag) => {
-                    const isChecked = editingSection.tagIds?.includes(tag.id);
-                    return (
-                      <button
-                        type="button"
-                        key={tag.id}
-                        onClick={() => {
-                          const current = editingSection.tagIds || [];
-                          const updated = isChecked
-                            ? current.filter((id) => id !== tag.id)
-                            : [...current, tag.id];
-                          setEditingSection({ ...editingSection, tagIds: updated });
-                        }}
-                        className={`px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1.5 transition-all ${
-                          isChecked ? 'bg-brand-500 text-white border-brand-400' : 'border-slate-700 text-slate-300'
-                        }`}
-                      >
-                        {isChecked && <Check className="w-3 h-3" />}
-                        #{tag.name}
-                      </button>
-                    );
-                  })}
+                <span className="text-[11px] text-slate-500">Marca o desmarca los artículos que deseas mostrar</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-48 overflow-y-auto p-2 rounded-xl border admin-scrollbar" style={{ backgroundColor: 'var(--admin-card-alt)', borderColor: 'var(--admin-border)' }}>
+                {STOREFRONT_PRODUCTS.map((prod) => {
+                  const isIncluded =
+                    !editingSection.productIds ||
+                    editingSection.productIds.length === 0 ||
+                    editingSection.productIds.includes(prod.id);
+
+                  return (
+                    <div
+                      key={prod.id}
+                      onClick={() => {
+                        const current = editingSection.productIds || STOREFRONT_PRODUCTS.map((p) => p.id);
+                        const updated = isIncluded
+                          ? current.filter((id) => id !== prod.id)
+                          : [...current, prod.id];
+                        setEditingSection({ ...editingSection, productIds: updated });
+                      }}
+                      className={`flex items-center gap-2 p-2 rounded-lg border text-xs cursor-pointer transition-all ${
+                        isIncluded
+                          ? 'border-indigo-500/70 bg-indigo-500/10 text-slate-100'
+                          : 'border-slate-800 bg-slate-900/40 text-slate-500 opacity-60'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isIncluded}
+                        onChange={() => {}} // handled by parent div
+                        className="rounded accent-indigo-600"
+                      />
+                      <img src={prod.images[0]} alt={prod.name} className="w-8 h-8 rounded object-cover" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-semibold text-[11px]">{prod.name}</p>
+                        <p className="text-[10px] text-slate-400">RD$ {prod.price.toLocaleString()}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* LIVE PREVIEW BOX EN EL MISMO FORM */}
+            <div className="space-y-3 pt-4 border-t" style={{ borderColor: 'var(--admin-border)' }}>
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                  <Eye className="w-4 h-4" /> Previsualización en Vivo de la Sección
+                </h4>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono">
+                  Layout: {editingSection.layoutType}
+                </span>
+              </div>
+
+              {/* Preview Container simulating Storefront canvas */}
+              <div className="p-6 rounded-2xl border bg-[#fbf9f6] text-neutral-900 shadow-inner overflow-hidden">
+                <div className="max-w-3xl mx-auto space-y-6">
+                  {/* Header Preview */}
+                  <div className="text-center space-y-1">
+                    {editingSection.badgeText && (
+                      <span className="inline-block text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 bg-neutral-900 text-white rounded-full">
+                        {editingSection.badgeText}
+                      </span>
+                    )}
+                    <h3 className="text-xl md:text-2xl font-serif text-neutral-900">
+                      {editingSection.title || 'Título de la Sección'}
+                    </h3>
+                    {editingSection.subtitle && (
+                      <p className="text-xs text-neutral-600">{editingSection.subtitle}</p>
+                    )}
+                  </div>
+
+                  {/* 1. Tag Filtered Carousel Preview */}
+                  {editingSection.layoutType === 'tag_filtered_carousel' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-center gap-2 overflow-x-auto pb-1">
+                        {(availableTags.filter((t) => editingSection.tagIds?.includes(t.id)).length > 0
+                          ? availableTags.filter((t) => editingSection.tagIds?.includes(t.id))
+                          : availableTags.slice(0, 3)
+                        ).map((t, idx) => (
+                          <span
+                            key={t.id}
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                              idx === 0 ? 'bg-neutral-900 text-white' : 'bg-stone-200 text-stone-700'
+                            }`}
+                          >
+                            #{t.name}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {STOREFRONT_PRODUCTS.filter((p) =>
+                          !editingSection.productIds || editingSection.productIds.length === 0
+                            ? true
+                            : editingSection.productIds.includes(p.id)
+                        )
+                          .slice(0, 3)
+                          .map((p) => (
+                            <div key={p.id} className="bg-white p-2.5 rounded-xl border border-stone-200 shadow-sm">
+                              <img src={p.images[0]} alt={p.name} className="w-full h-24 object-cover rounded-lg mb-2" />
+                              <p className="text-xs font-bold text-neutral-900 truncate">{p.name}</p>
+                              <p className="text-xs text-neutral-700 font-extrabold">RD$ {p.price.toLocaleString()}</p>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 2. Continuous Scrollbar Carousel Preview */}
+                  {editingSection.layoutType === 'carousel_with_scrollbar' && (
+                    <div className="flex gap-3 overflow-x-auto pb-2">
+                      {STOREFRONT_PRODUCTS.filter((p) =>
+                        !editingSection.productIds || editingSection.productIds.length === 0
+                          ? true
+                          : editingSection.productIds.includes(p.id)
+                      )
+                        .slice(0, 4)
+                        .map((p) => (
+                          <div key={p.id} className="w-40 flex-shrink-0 bg-white p-2.5 rounded-xl border border-stone-200 shadow-sm">
+                            <img src={p.images[0]} alt={p.name} className="w-full h-28 object-cover rounded-lg mb-1.5" />
+                            <p className="text-xs font-bold truncate">{p.name}</p>
+                            <p className="text-xs text-neutral-800 font-bold">RD$ {p.price.toLocaleString()}</p>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+
+                  {/* 3. Centered Art Gallery Preview */}
+                  {editingSection.layoutType === 'art_gallery_centered' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {STOREFRONT_PRODUCTS.filter((p) =>
+                        !editingSection.productIds || editingSection.productIds.length === 0
+                          ? true
+                          : editingSection.productIds.includes(p.id)
+                      )
+                        .slice(0, 2)
+                        .map((p) => (
+                          <div key={p.id} className="bg-gradient-to-b from-stone-200 to-stone-300 p-3 rounded-2xl text-center shadow-md">
+                            <img src={p.images[0]} alt={p.name} className="w-full h-36 object-cover rounded-xl shadow-lg mb-2" />
+                            <p className="text-xs font-bold text-neutral-900">{p.name}</p>
+                            <p className="text-xs font-extrabold text-neutral-900 mt-0.5">RD$ {p.price.toLocaleString()}</p>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+
+                  {/* 4. Grid 4 Cols Preview */}
+                  {editingSection.layoutType === 'grid_4_cols' && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+                      {STOREFRONT_PRODUCTS.filter((p) =>
+                        !editingSection.productIds || editingSection.productIds.length === 0
+                          ? true
+                          : editingSection.productIds.includes(p.id)
+                      )
+                        .slice(0, 4)
+                        .map((p) => (
+                          <div key={p.id} className="bg-white p-2 rounded-xl border border-stone-200 text-center">
+                            <img src={p.images[0]} alt={p.name} className="w-full h-20 object-cover rounded-lg mb-1" />
+                            <p className="text-[11px] font-bold truncate">{p.name}</p>
+                            <p className="text-[11px] font-extrabold">RD$ {p.price.toLocaleString()}</p>
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
 
+            {/* Action Buttons */}
             <div className="flex justify-end gap-2 pt-3 border-t" style={{ borderColor: 'var(--admin-border)' }}>
               <Button type="button" variant="outline" size="sm" onClick={() => setIsSectionModalOpen(false)}>
                 Cancelar
