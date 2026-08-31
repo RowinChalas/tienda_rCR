@@ -6,6 +6,7 @@ import { ArrowRight, Leaf, Hammer, Star } from 'lucide-react';
 import { HeroSlider } from '../modules/storefront/components/HeroSlider';
 import { LookbookViewer } from '../modules/storefront/components/LookbookViewer';
 import { ProductCard } from '../modules/storefront/components/ProductCard';
+import { DynamicSectionsRenderer } from '../modules/storefront/components/DynamicSectionsRenderer';
 import { CATEGORIES, STOREFRONT_PRODUCTS, type StorefrontProduct } from '../modules/storefront/data/storefrontData';
 
 import { usePlatform } from '../context/PlatformContext';
@@ -205,7 +206,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateCatalog, onP
         </div>
       </section>
 
-      {/* ── 5. BRAND VALUES ───────────────────────────── */}
+      {/* ── 5. SECCIONES DINÁMICAS CMS (ESTILO CASAMIA / GUUD.COM) ── */}
+      <section className="py-12 bg-white">
+        <DynamicSectionsRenderer onSelectProduct={onProductSelect} />
+      </section>
+
+      {/* ── 6. BRAND VALUES ───────────────────────────── */}
       <section
         className="py-20"
         style={{ background: 'var(--sf-charcoal)' }}

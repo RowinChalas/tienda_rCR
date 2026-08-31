@@ -54,6 +54,21 @@ export class MockProductRepository implements IProductRepository {
     return list.find((p) => p.id === id) || null;
   }
 
+  public async create(
+    productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Product> {
+    const list = this.getStoredProducts();
+    const newProduct: Product = {
+      ...productData,
+      id: `prod_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    list.unshift(newProduct);
+    this.save(list);
+    return newProduct;
+  }
+
   public async createDraft(
     draftData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Product> {

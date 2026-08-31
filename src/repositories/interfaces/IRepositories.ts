@@ -53,3 +53,24 @@ export interface ICmsRepository {
   deleteNavMenu(id: string): Promise<boolean>;
   saveCollection(collection: VisualCollection): Promise<VisualCollection>;
 }
+
+import { Tag } from '../../domain/models/Tag';
+import { StorefrontSection } from '../../domain/models/StorefrontSection';
+
+export interface ITagRepository {
+  getAll(): Promise<Tag[]>;
+  getById(id: string): Promise<Tag | null>;
+  save(tag: Omit<Tag, 'createdAt'> & { createdAt?: string }): Promise<Tag>;
+  delete(id: string): Promise<boolean>;
+  assignProduct(tagId: string, productId: string): Promise<Tag>;
+  removeProduct(tagId: string, productId: string): Promise<Tag>;
+}
+
+export interface ISectionRepository {
+  getAll(): Promise<StorefrontSection[]>;
+  getById(id: string): Promise<StorefrontSection | null>;
+  save(section: Omit<StorefrontSection, 'createdAt'> & { createdAt?: string }): Promise<StorefrontSection>;
+  delete(id: string): Promise<boolean>;
+  reorder(sectionIds: string[]): Promise<StorefrontSection[]>;
+  toggleVisibility(id: string, isVisible: boolean): Promise<StorefrontSection>;
+}

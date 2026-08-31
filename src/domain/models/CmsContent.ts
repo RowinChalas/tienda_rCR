@@ -6,6 +6,7 @@ export interface NavMenuItem {
   id: string;
   label: string;
   targetCategory: string; // 'all' | 'sala' | 'comedor' | 'dormitorio' | 'oficina' | etc.
+  categoryKey?: string;
   customUrl?: string;
   order: number;
   isActive: boolean;

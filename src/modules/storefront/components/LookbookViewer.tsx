@@ -2,10 +2,11 @@
 // Módulo "Explorador de Espacios" (Shoppable Images) multi-ambiente con coordenadas relativas (X%, Y%)
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles, ShoppingBag } from 'lucide-react';
 import type { StorefrontProduct } from '../data/storefrontData';
 import { STOREFRONT_PRODUCTS } from '../data/storefrontData';
 import { usePlatform } from '../../../context/PlatformContext';
+import { useCart } from '../../../context/CartContext';
 
 interface LookbookViewerProps {
   onProductSelect: (product: StorefrontProduct) => void;
@@ -13,6 +14,7 @@ interface LookbookViewerProps {
 
 export const LookbookViewer: React.FC<LookbookViewerProps> = ({ onProductSelect }) => {
   const { cms } = usePlatform();
+  const { addItem } = useCart();
   const [activeSceneIndex, setActiveSceneIndex] = useState(0);
   const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
 
@@ -55,7 +57,7 @@ export const LookbookViewer: React.FC<LookbookViewerProps> = ({ onProductSelect 
           />
         </AnimatePresence>
 
-        {/* Hotspot dots con Coordenadas Relativas (X%, Y%) */}
+        {/* Hotspot dots con Puntos Blancos Circulares Minimalistas (Ref: image copy 3.png) */}
         {currentScene.hotspots.map((hs) => {
           const product = getProduct(hs.productId);
           const isActive = activeHotspot === hs.id;
@@ -72,32 +74,30 @@ export const LookbookViewer: React.FC<LookbookViewerProps> = ({ onProductSelect 
                 zIndex: isActive ? 30 : 20,
               }}
             >
-              <div className="relative">
+              <div className="relative flex items-center justify-center">
+                {/* Minimal White Circular Dot with Soft Glow */}
                 <motion.button
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.25 }}
+                  whileTap={{ scale: 0.92 }}
                   onClick={() => toggleHotspot(hs.id)}
-                  className="sf-hotspot relative w-9 h-9 rounded-full flex items-center justify-center z-10 cursor-pointer"
+                  className="relative w-4 h-4 rounded-full bg-white shadow-xl cursor-pointer flex items-center justify-center transition-all duration-200"
                   style={{
-                    background: isActive ? 'var(--sf-charcoal)' : 'rgba(255,255,255,0.95)',
-                    boxShadow: '0 2px 14px rgba(0,0,0,0.3)',
-                    backdropFilter: 'blur(8px)',
+                    boxShadow: isActive
+                      ? '0 0 0 6px rgba(255, 255, 255, 0.4), 0 4px 15px rgba(0, 0, 0, 0.35)'
+                      : '0 0 0 3px rgba(255, 255, 255, 0.35), 0 2px 10px rgba(0, 0, 0, 0.25)',
                   }}
                   aria-label={`Ver producto: ${product.name}`}
                   aria-expanded={isActive}
                 >
-                  {isActive ? (
-                    <X className="w-4 h-4 text-white" />
-                  ) : (
-                    <Plus className="w-4 h-4" style={{ color: 'var(--sf-charcoal)' }} />
-                  )}
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-800 opacity-60" />
                 </motion.button>
 
-                {/* Pulse Ring when inactive */}
+                {/* Subtle outer breathing ring */}
                 {!isActive && (
-                  <span className="absolute inset-0 rounded-full bg-white/40 animate-ping pointer-events-none" />
+                  <span className="absolute inset-0 -m-1.5 rounded-full bg-white/30 animate-ping pointer-events-none" />
                 )}
 
-                {/* Product Tooltip Card (Responsivo con clamp visual) */}
+                {/* Product Tooltip Card */}
                 <AnimatePresence>
                   {isActive && (
                     <motion.div
@@ -107,17 +107,18 @@ export const LookbookViewer: React.FC<LookbookViewerProps> = ({ onProductSelect 
                       transition={{ type: 'spring', stiffness: 400, damping: 28 }}
                       className="absolute z-40 w-64"
                       style={{
-                        bottom: hs.y > 60 ? '125%' : 'auto',
-                        top: hs.y > 60 ? 'auto' : '125%',
+                        bottom: hs.y > 60 ? '135%' : 'auto',
+                        top: hs.y > 60 ? 'auto' : '135%',
                         left: hs.x > 70 ? 'auto' : hs.x < 30 ? '0%' : '50%',
                         right: hs.x > 70 ? '0%' : 'auto',
                         transform: hs.x >= 30 && hs.x <= 70 ? 'translateX(-50%)' : 'none',
                       }}
                     >
                       <div
-                        className="rounded-sm overflow-hidden"
+                        className="rounded-sm overflow-hidden border"
                         style={{
                           background: 'white',
+                          borderColor: 'var(--sf-stone)',
                           boxShadow: '0 12px 36px rgba(0,0,0,0.22)',
                         }}
                       >
@@ -156,22 +157,33 @@ export const LookbookViewer: React.FC<LookbookViewerProps> = ({ onProductSelect 
                             {product.name}
                           </h4>
 
-                          <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                          <div className="flex items-center justify-between pt-1 border-t border-slate-100 gap-2">
                             <span className="text-xs font-bold" style={{ color: 'var(--sf-charcoal)' }}>
                               {product.priceFormatted}
                             </span>
-                            <button
-                              onClick={() => onProductSelect(product)}
-                              className="text-[10px] font-medium px-2.5 py-1 rounded-sm transition-colors cursor-pointer"
-                              style={{
-                                background: 'var(--sf-charcoal)',
-                                color: 'white',
-                                fontFamily: 'var(--font-ui)',
-                                letterSpacing: '0.03em',
-                              }}
-                            >
-                              Ver pieza →
-                            </button>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  addItem(product, 1);
+                                }}
+                                title="Añadir a la bolsa"
+                                className="p-1.5 rounded-sm bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors cursor-pointer"
+                              >
+                                <ShoppingBag className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => onProductSelect(product)}
+                                className="text-[10px] font-medium px-2 py-1 rounded-sm transition-colors cursor-pointer text-white"
+                                style={{
+                                  background: 'var(--sf-charcoal)',
+                                  fontFamily: 'var(--font-ui)',
+                                  letterSpacing: '0.03em',
+                                }}
+                              >
+                                Ver →
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -2,7 +2,8 @@
 // Vista de detalle de producto con 3D viewer, galería, info, reserva y venta cruzada
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, MessageCircle, Package, Truck, ShieldCheck, ChevronDown, Sparkles } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Package, Truck, ShieldCheck, ChevronDown, Sparkles, ShoppingBag } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 import { Product3DViewer } from '../modules/storefront/components/Product3DViewer';
 import { ReservationCheckoutModal } from '../modules/storefront/components/ReservationCheckoutModal';
 import { CrossSellRecommender } from '../domain/catalog/CrossSellRecommender';
@@ -23,6 +24,7 @@ const FEATURES = [
 export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, onBack, onSelectProduct }) => {
   const [openAccordion, setOpenAccordion] = useState<string | null>('descripcion');
   const [isReservationOpen, setIsReservationOpen] = useState(false);
+  const { addItem } = useCart();
 
   const crossSells = useMemo(() => {
     return CrossSellRecommender.getComplementaryCrossSell(product, STOREFRONT_PRODUCTS, 3);
@@ -189,21 +191,30 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, o
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-3 mb-8">
+            <button
+              onClick={() => addItem(product, 1)}
+              className="sf-btn-primary flex-1 justify-center gap-2 cursor-pointer"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              Añadir a la bolsa
+            </button>
+            <button
+              onClick={() => setIsReservationOpen(true)}
+              className="sf-btn-secondary flex-1 justify-center cursor-pointer"
+            >
+              Reservar pieza (Soft Lock)
+            </button>
+          </div>
+          <div className="mb-8">
             <a
               href={`https://wa.me/18094000000?text=${whatsappMsg}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="sf-btn-primary flex-1 justify-center"
+              className="w-full py-2.5 px-4 rounded border text-xs font-semibold flex items-center justify-center gap-2 text-emerald-800 bg-emerald-50 border-emerald-200 hover:bg-emerald-100 transition-colors"
             >
-              <MessageCircle className="w-4 h-4" />
-              Consultar por WhatsApp
+              <MessageCircle className="w-4 h-4 text-emerald-600" />
+              Consultar detalles personalizados por WhatsApp
             </a>
-            <button
-              onClick={() => setIsReservationOpen(true)}
-              className="sf-btn-secondary flex-1 justify-center"
-            >
-              Reservar pieza
-            </button>
           </div>
 
           {/* Feature bullets */}

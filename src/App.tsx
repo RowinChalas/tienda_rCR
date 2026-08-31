@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { StorefrontLayout } from './pages/StorefrontLayout';
 import { AppLayout } from './app/AppLayout';
 import { PlatformProvider } from './context/PlatformContext';
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 
 type AppView = 'storefront' | 'admin';
 
@@ -11,32 +13,36 @@ const App: React.FC = () => {
   const [appView, setAppView] = useState<AppView>('storefront');
 
   return (
-    <PlatformProvider>
-      <AnimatePresence mode="wait">
-        {appView === 'storefront' ? (
-          <motion.div
-            key="storefront"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-          >
-            <StorefrontLayout onGoAdmin={() => setAppView('admin')} />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="admin"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="admin-root"
-          >
-            <AppLayout onGoStorefront={() => setAppView('storefront')} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </PlatformProvider>
+    <AuthProvider>
+      <PlatformProvider>
+        <CartProvider>
+          <AnimatePresence mode="wait">
+            {appView === 'storefront' ? (
+              <motion.div
+                key="storefront"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+              >
+                <StorefrontLayout onGoAdmin={() => setAppView('admin')} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="admin"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="admin-root"
+              >
+                <AppLayout onGoStorefront={() => setAppView('storefront')} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </CartProvider>
+      </PlatformProvider>
+    </AuthProvider>
   );
 };
 

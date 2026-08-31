@@ -11,6 +11,7 @@ export interface ModalProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '4xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '4xl';
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -20,8 +21,10 @@ export const Modal: React.FC<ModalProps> = ({
   description,
   children,
   footer,
-  maxWidth = 'lg',
+  maxWidth,
+  size,
 }) => {
+  const actualWidth = size || maxWidth || 'lg';
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -63,7 +66,7 @@ export const Modal: React.FC<ModalProps> = ({
             transition={{ type: 'spring', damping: 26, stiffness: 320 }}
             className={clsx(
               'relative w-full glass-panel-elevated rounded-2xl shadow-2xl border border-white/10 overflow-hidden z-10 my-8',
-              maxWidthClasses[maxWidth],
+              maxWidthClasses[actualWidth],
             )}
           >
             {/* Header */}

@@ -224,3 +224,32 @@ html { scroll-behavior: smooth; }
   opacity: 0;
   animation: sf-slide-up 500ms var(--ease-spring) forwards;
 }
+
+/* Finnova Custom Scrollbars & Utilities */
+.admin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--admin-border-strong);
+  border-radius: 9999px;
+}
+.admin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--admin-accent);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 20px -3px rgba(99, 102, 241, 0.45);
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

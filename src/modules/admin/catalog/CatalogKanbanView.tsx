@@ -7,6 +7,7 @@ import { ImageProcessorModal } from './ImageProcessorModal';
 import { PublicationChecklistModal } from './PublicationChecklistModal';
 import { WhatsAppIngestSimulatorModal } from './WhatsAppIngestSimulatorModal';
 import { PublicationChecklist } from '../../../domain/validation/PublicationChecklist';
+import { ProductCreateModal } from '../products/ProductCreateModal';
 import {
   Wand2,
   Sparkles,
@@ -15,6 +16,7 @@ import {
   Clock,
   AlertTriangle,
   MessageSquare,
+  Plus,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -25,6 +27,7 @@ export const CatalogKanbanView: React.FC = () => {
   const [activeImageProduct, setActiveImageProduct] = useState<Product | null>(null);
   const [activeChecklistProduct, setActiveChecklistProduct] = useState<Product | null>(null);
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
+  const [isManualCreateOpen, setIsManualCreateOpen] = useState(false);
 
   const loadProducts = async () => {
     const list = await services.productRepo.getAll({
@@ -168,6 +171,15 @@ export const CatalogKanbanView: React.FC = () => {
             <option value="Recámaras y Camas">Recámaras y Camas</option>
             <option value="Sillas y Sillones">Sillas y Sillones</option>
           </select>
+
+          <Button
+            variant="outline"
+            size="sm"
+            leftIcon={<Plus className="w-3.5 h-3.5" />}
+            onClick={() => setIsManualCreateOpen(true)}
+          >
+            + Crear Producto Manual
+          </Button>
 
           <Button
             variant="primary"
@@ -420,6 +432,12 @@ export const CatalogKanbanView: React.FC = () => {
       <WhatsAppIngestSimulatorModal
         isOpen={isWhatsAppModalOpen}
         onClose={() => setIsWhatsAppModalOpen(false)}
+        onProductCreated={loadProducts}
+      />
+
+      <ProductCreateModal
+        isOpen={isManualCreateOpen}
+        onClose={() => setIsManualCreateOpen(false)}
         onProductCreated={loadProducts}
       />
     </div>

@@ -9,6 +9,10 @@ import { ProductDetailPage } from './ProductDetailPage';
 import type { StorefrontProduct } from '../modules/storefront/data/storefrontData';
 
 import { usePlatform } from '../context/PlatformContext';
+import { useCart } from '../context/CartContext';
+import { CartDrawer } from '../modules/storefront/components/CartDrawer';
+import { ReservationCheckoutModal } from '../modules/storefront/components/ReservationCheckoutModal';
+import { STOREFRONT_PRODUCTS } from '../modules/storefront/data/storefrontData';
 
 type StorefrontView = 'landing' | 'catalog' | 'product';
 
@@ -18,12 +22,13 @@ interface StorefrontLayoutProps {
 
 export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin }) => {
   const { settings, cms } = usePlatform();
+  const { itemCount, openCart, toastMessage, items } = useCart();
   const [view, setView] = useState<StorefrontView>('landing');
   const [selectedProduct, setSelectedProduct] = useState<StorefrontProduct | null>(null);
   const [catalogCategory, setCatalogCategory] = useState<string>('all');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [cartCount] = useState(0);
+  const [isCartCheckoutOpen, setIsCartCheckoutOpen] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -117,16 +122,17 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
             </button>
 
             <button
-              aria-label={`Carrito (${cartCount} items)`}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 transition-colors relative"
+              onClick={openCart}
+              aria-label={`Carrito (${itemCount} items)`}
+              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 transition-colors relative cursor-pointer"
             >
               <ShoppingBag className="w-4 h-4" style={{ color: isHero ? 'white' : 'var(--sf-charcoal)' }} />
-              {cartCount > 0 && (
+              {itemCount > 0 && (
                 <span
-                  className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center"
+                  className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center animate-scale-in"
                   style={{ background: 'var(--sf-charcoal)', color: 'white' }}
                 >
-                  {cartCount}
+                  {itemCount}
                 </span>
               )}
             </button>
@@ -324,6 +330,37 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
           </p>
         </div>
       </footer>
+
+      {/* Cart Drawer Slide-over */}
+      <CartDrawer onCheckout={() => setIsCartCheckoutOpen(true)} />
+
+      {/* Checkout Soft Lock Modal for Cart */}
+      {isCartCheckoutOpen && (
+        <ReservationCheckoutModal
+          product={
+            items.length > 0
+              ? STOREFRONT_PRODUCTS.find((p) => p.id === items[0].productId) || STOREFRONT_PRODUCTS[0]
+              : STOREFRONT_PRODUCTS[0]
+          }
+          isOpen={isCartCheckoutOpen}
+          onClose={() => setIsCartCheckoutOpen(false)}
+        />
+      )}
+
+      {/* Dynamic Toast Feedback when adding to Cart */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            className="fixed bottom-6 right-6 z-50 px-5 py-3 rounded bg-[var(--sf-charcoal)] text-white shadow-2xl text-xs font-semibold flex items-center gap-2.5 border border-white/20"
+          >
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

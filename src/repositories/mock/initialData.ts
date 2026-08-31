@@ -4,6 +4,8 @@ import { PricingRule } from '../../domain/models/PricingRule';
 import { CrmConversation, CrmMessage, Customer } from '../../domain/models/CrmConversation';
 import { PlatformSettings } from '../../domain/models/PlatformSettings';
 import { CmsState } from '../../domain/models/CmsContent';
+import { Tag } from '../../domain/models/Tag';
+import { StorefrontSection } from '../../domain/models/StorefrontSection';
 
 export const INITIAL_SUPPLIERS: Supplier[] = [
   {
@@ -642,3 +644,60 @@ export const INITIAL_CMS_STATE: CmsState = {
   ],
   weeklyFeaturedLimit: 4,
 };
+
+export const INITIAL_TAGS: Tag[] = [
+  { id: 'tag_cocina', name: 'cocina', slug: 'cocina', color: '#10b981', productIds: ['silla-luna-camel', 'mesa-travertino-nogal'], createdAt: '2026-01-01' },
+  { id: 'tag_telas', name: 'Telas para el hogar', slug: 'telas-para-el-hogar', color: '#3b82f6', productIds: ['sofa-arco-gris', 'silla-luna-camel', 'cabecera-cuero-cognac'], createdAt: '2026-01-01' },
+  { id: 'tag_muebles', name: 'muebles', slug: 'muebles', color: '#f59e0b', productIds: ['sofa-arco-gris', 'mesa-travertino-nogal', 'silla-luna-camel', 'cabecera-cuero-cognac'], createdAt: '2026-01-01' },
+  { id: 'tag_iluminacion', name: 'Iluminación / Decoración', slug: 'iluminacion-decoracion', color: '#8b5cf6', productIds: ['lampara-escultura-bronce', 'cuadro-horizonte-minimal'], createdAt: '2026-01-01' },
+  { id: 'tag_arte', name: 'Galería de Arte', slug: 'galeria-de-arte', color: '#ec4899', productIds: ['cuadro-horizonte-minimal'], createdAt: '2026-01-01' },
+  { id: 'tag_exclusivo', name: 'Exclusivo Online', slug: 'exclusivo-online', color: '#eab308', productIds: ['sofa-arco-gris', 'cabecera-cuero-cognac'], createdAt: '2026-01-01' },
+];
+
+export const INITIAL_SECTIONS: StorefrontSection[] = [
+  {
+    id: 'sec_weekly_offers',
+    title: 'Las ofertas especiales de esta semana que no querrás perderte',
+    subtitle: 'Piezas artesanales seleccionadas con entrega inmediata o 24-48h',
+    layoutType: 'tag_filtered_carousel',
+    order: 1,
+    isVisible: true,
+    tagIds: ['tag_cocina', 'tag_telas', 'tag_muebles', 'tag_iluminacion', 'tag_arte'],
+    productIds: ['sofa-arco-gris', 'mesa-travertino-nogal', 'silla-luna-camel', 'lampara-escultura-bronce'],
+    badgeText: 'Oferta Especial',
+    createdAt: '2026-01-01',
+  },
+  {
+    id: 'sec_just_arrived',
+    title: 'Acaba de llegar',
+    subtitle: 'Nuevas incorporaciones al catálogo directo desde los talleres',
+    layoutType: 'carousel_with_scrollbar',
+    order: 2,
+    isVisible: true,
+    productIds: ['sofa-arco-gris', 'mesa-travertino-nogal', 'silla-luna-camel', 'cabecera-cuero-cognac', 'lampara-escultura-bronce'],
+    badgeText: 'Novedad',
+    createdAt: '2026-01-01',
+  },
+  {
+    id: 'sec_art_gallery',
+    title: 'Mi pequeña galería de arte en casa',
+    subtitle: 'Cuadros, esculturas y objetos únicos para elevar cualquier ambiente',
+    layoutType: 'art_gallery_centered',
+    order: 3,
+    isVisible: true,
+    productIds: ['cuadro-horizonte-minimal', 'mesa-travertino-nogal', 'lampara-escultura-bronce'],
+    badgeText: 'Edición Limitada',
+    createdAt: '2026-01-01',
+  },
+  {
+    id: 'sec_exclusive_online',
+    title: 'Exclusivo Online & Fabricación a Medida',
+    subtitle: 'Disponibles únicamente a través de nuestro atelier digital',
+    layoutType: 'grid_4_cols',
+    order: 4,
+    isVisible: true,
+    productIds: ['cabecera-cuero-cognac', 'sofa-arco-gris', 'mesa-travertino-nogal', 'silla-luna-camel'],
+    badgeText: 'Exclusivo Online',
+    createdAt: '2026-01-01',
+  },
+];

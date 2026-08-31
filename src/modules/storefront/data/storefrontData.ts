@@ -11,6 +11,10 @@ export interface StorefrontProduct {
   category: StorefrontCategory;
   price: number;
   priceFormatted: string;
+  originalPrice?: number;
+  originalPriceFormatted?: string;
+  discountPct?: number;
+  tags?: string[];
   description: string;
   materials: string;
   dimensions: { width: number; height: number; depth: number };
@@ -21,6 +25,7 @@ export interface StorefrontProduct {
   isNew?: boolean;
   isBestseller?: boolean;
   isFeaturedWeekly?: boolean;
+  isArtPiece?: boolean;
   inStock: boolean;
   logisticStatus?: StorefrontLogisticStatus;
   estimatedFulfillmentText?: string;
@@ -60,6 +65,10 @@ export const STOREFRONT_PRODUCTS: StorefrontProduct[] = [
     category: 'sala',
     price: 185990,
     priceFormatted: fmt(185990),
+    originalPrice: 215000,
+    originalPriceFormatted: fmt(215000),
+    discountPct: 14,
+    tags: ['muebles', 'sala', 'novedad', 'exclusivo'],
     description:
       'Estructura de nogal macizo dominicano. Tapizado en lino gris piedra de alta resistencia. Diseño atemporal con patas cónicas que elevan visualmente la pieza. Producción bajo demanda, entrega en 3-5 semanas.',
     materials: 'Nogal macizo + Lino gris piedra (grado contract)',
@@ -84,6 +93,10 @@ export const STOREFRONT_PRODUCTS: StorefrontProduct[] = [
     category: 'sala',
     price: 68490,
     priceFormatted: fmt(68490),
+    originalPrice: 85000,
+    originalPriceFormatted: fmt(85000),
+    discountPct: 20,
+    tags: ['muebles', 'sala', 'novedad'],
     description:
       'Tablero redondo en travertino natural con veteado único. Base de nogal tallado a mano con patas arqueadas inspiradas en la biología de los arcos góticos. Pieza artesanal de colección.',
     materials: 'Travertino romano + Nogal macizo dominicano',
@@ -107,6 +120,10 @@ export const STOREFRONT_PRODUCTS: StorefrontProduct[] = [
     category: 'comedor',
     price: 22990,
     priceFormatted: fmt(22990),
+    originalPrice: 28000,
+    originalPriceFormatted: fmt(28000),
+    discountPct: 18,
+    tags: ['muebles', 'comedor', 'telas'],
     description:
       'Forma esculpida que abraza el cuerpo. Estructura de nogal oscuro con asiento y respaldo tapizados en bouclé camel. Ideal para comedores formales o como silla de escritorio de lujo.',
     materials: 'Nogal oscuro + Bouclé camel 100% lana reciclada',
@@ -129,6 +146,10 @@ export const STOREFRONT_PRODUCTS: StorefrontProduct[] = [
     category: 'dormitorio',
     price: 54990,
     priceFormatted: fmt(54990),
+    originalPrice: 65000,
+    originalPriceFormatted: fmt(65000),
+    discountPct: 15,
+    tags: ['dormitorio', 'telas', 'exclusivo'],
     description:
       'Panel king-size en cuero full-grain cognac con costuras rectas. Marco de acero negro mate de 16mm. Diseño que equilibra industrialismo y calidez artesanal.',
     materials: 'Cuero full-grain cognac + Acero negro mate',
@@ -141,6 +162,44 @@ export const STOREFRONT_PRODUCTS: StorefrontProduct[] = [
     inStock: true,
     logisticStatus: 'bajo_pedido',
     estimatedFulfillmentText: '⏱ Fabricación en 15 días',
+  },
+  {
+    id: 'cuadro-horizonte-minimal',
+    slug: 'cuadro-galeria-horizonte',
+    name: 'Horizonte Etéreo — Impresión Enmarcada',
+    brand: 'Galería BarverSuit',
+    category: 'sala',
+    price: 34900,
+    priceFormatted: fmt(34900),
+    originalPrice: 42000,
+    originalPriceFormatted: fmt(42000),
+    discountPct: 17,
+    tags: ['iluminacion', 'decoracion', 'arte'],
+    description: 'Impresión fine-art sobre papel de algodón 310g con marco en madera de roble natural y cristal antirreflejo.',
+    materials: 'Papel algodón 310g + Marco Roble Natural',
+    dimensions: { width: 120, height: 80, depth: 4 },
+    images: ['/images/lookbook/sala-full.jpg'],
+    isArtPiece: true,
+    inStock: true,
+    logisticStatus: 'disponible_ya',
+    estimatedFulfillmentText: '✦ Envío Inmediato',
+  },
+  {
+    id: 'lampara-escultura-bronce',
+    slug: 'lampara-mesa-escultura-bronce',
+    name: 'Lámpara de Mesa Escultórica',
+    brand: 'Studio BarverSuit',
+    category: 'oficina',
+    price: 18500,
+    priceFormatted: fmt(18500),
+    tags: ['iluminacion', 'decoracion', 'novedad'],
+    description: 'Base de cerámica texturizada a mano con pantalla de lino orgánico y dimmer táctil.',
+    materials: 'Cerámica volcánica + Lino crudo',
+    dimensions: { width: 35, height: 50, depth: 35 },
+    images: ['/images/heroes/hero-sala.jpg'],
+    inStock: true,
+    logisticStatus: 'jit',
+    estimatedFulfillmentText: '⚡ Despacho en 24-48h (JIT)',
   },
 ];
 

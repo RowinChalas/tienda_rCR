@@ -10,6 +10,7 @@ export interface ProductFilters {
 export interface IProductRepository {
   getAll(filters?: ProductFilters): Promise<Product[]>;
   getById(id: string): Promise<Product | null>;
+  create(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product>;
   createDraft(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product>;
   update(id: string, updates: Partial<Product>): Promise<Product>;
   publish(id: string): Promise<Product>;

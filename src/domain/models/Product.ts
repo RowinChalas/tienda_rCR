@@ -58,6 +58,9 @@ export interface Product {
   logisticStatus?: LogisticStatus; // 'disponible_ya' (Inmediato) | 'jit' (24-48h) | 'bajo_pedido' (15 días)
   estimatedFulfillmentText?: string;
   isFeaturedWeekly?: boolean; // Pieza destacada de la semana
+  tags?: string[]; // Tags asociados ej: ['cocina', 'muebles', 'oferta', 'novedad']
+  originalPrice?: number; // Para mostrar precio tachado ej: $64,000 -> $55,000
+  discountPct?: number; // ej: 14%
   createdAt: string;
   updatedAt: string;
 }
