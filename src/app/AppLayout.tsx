@@ -4,6 +4,7 @@ import { PricingSimulatorView } from '../modules/admin/pricing/PricingSimulatorV
 import { CrmOmnichannelView } from '../modules/admin/crm/CrmOmnichannelView';
 import { OrdersManagementView } from '../modules/admin/orders/OrdersManagementView';
 import { AnalyticsDashboardView } from '../modules/admin/analytics/AnalyticsDashboardView';
+import { CmsManagerView } from '../modules/admin/cms/CmsManagerView';
 import { SupplierPortalView } from '../modules/supplier/SupplierPortalView';
 import {
   Layers,
@@ -14,12 +15,13 @@ import {
   Building,
   Shield,
   ShoppingBag,
+  Palette,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sun, Moon } from 'lucide-react';
 
 export type UserRole = 'admin' | 'supplier';
-export type AdminTab = 'catalog' | 'pricing' | 'crm' | 'orders' | 'analytics';
+export type AdminTab = 'catalog' | 'pricing' | 'crm' | 'orders' | 'analytics' | 'cms';
 export type AdminTheme = 'aurex' | 'helios';
 
 interface AppLayoutProps {
@@ -37,6 +39,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ onGoStorefront }) => {
     { id: 'crm', label: 'CRM Omnicanal', icon: <MessageSquare className="w-4 h-4" /> },
     { id: 'orders', label: 'Órdenes & Despacho', icon: <Package className="w-4 h-4" /> },
     { id: 'analytics', label: 'Analítica & KPIs', icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 'cms', label: 'CMS & Tienda', icon: <Palette className="w-4 h-4" /> },
   ];
 
   return (
@@ -245,6 +248,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ onGoStorefront }) => {
               {activeTab === 'crm' && <CrmOmnichannelView />}
               {activeTab === 'orders' && <OrdersManagementView />}
               {activeTab === 'analytics' && <AnalyticsDashboardView />}
+              {activeTab === 'cms' && <CmsManagerView />}
             </motion.div>
           )}
         </AnimatePresence>

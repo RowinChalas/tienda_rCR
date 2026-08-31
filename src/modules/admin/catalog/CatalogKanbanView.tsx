@@ -295,6 +295,58 @@ export const CatalogKanbanView: React.FC = () => {
                         </div>
                       </div>
 
+                      {/* Clasificación Logística & Destacado */}
+                      <div className="flex items-center justify-between gap-1.5 pt-1 text-[10px]">
+                        <select
+                          value={prod.logisticStatus || 'jit'}
+                          onChange={async (e) => {
+                            const newStatus = e.target.value as 'disponible_ya' | 'jit' | 'bajo_pedido';
+                            await services.productRepo.update(prod.id, {
+                              logisticStatus: newStatus,
+                              estimatedFulfillmentText:
+                                newStatus === 'disponible_ya'
+                                  ? '✦ Envío Inmediato'
+                                  : newStatus === 'jit'
+                                  ? '⚡ Despacho en 24-48h (JIT)'
+                                  : '⏱ Fabricación en 15 días',
+                            });
+                            await loadProducts();
+                          }}
+                          className="px-1.5 py-1 rounded text-[10px] font-semibold border"
+                          style={{
+                            backgroundColor: 'var(--admin-bg)',
+                            borderColor: 'var(--admin-border)',
+                            color:
+                              prod.logisticStatus === 'disponible_ya'
+                                ? '#10b981'
+                                : prod.logisticStatus === 'bajo_pedido'
+                                ? '#a855f7'
+                                : '#f59e0b',
+                          }}
+                        >
+                          <option value="disponible_ya">✦ Disponible ya (Inmediato)</option>
+                          <option value="jit">⚡ Just in Time (24-48h)</option>
+                          <option value="bajo_pedido">⏱ Requiere Tiempo (15 días)</option>
+                        </select>
+
+                        <button
+                          onClick={async () => {
+                            await services.productRepo.update(prod.id, {
+                              isFeaturedWeekly: !prod.isFeaturedWeekly,
+                            });
+                            await loadProducts();
+                          }}
+                          title={prod.isFeaturedWeekly ? 'Quitar de Pieza de la Semana' : 'Marcar como Pieza de la Semana'}
+                          className={`px-2 py-1 rounded text-[10px] font-bold border transition-colors ${
+                            prod.isFeaturedWeekly
+                              ? 'bg-amber-400/20 text-amber-300 border-amber-400/40'
+                              : 'text-slate-400 border-slate-700 hover:text-slate-200'
+                          }`}
+                        >
+                          ★ {prod.isFeaturedWeekly ? 'Destacado' : 'Destacar'}
+                        </button>
+                      </div>
+
                       {/* Action Buttons */}
                       <div className="flex items-center justify-between pt-1 gap-2">
                         {col.id === 'crudo' && (

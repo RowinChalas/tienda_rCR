@@ -32,7 +32,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index, onSele
         />
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+          {product.logisticStatus === 'disponible_ya' && (
+            <span className="sf-label bg-emerald-700 text-white px-2 py-0.5 rounded-sm text-[9px] font-bold tracking-wider shadow-sm">
+              ✦ Envío Inmediato
+            </span>
+          )}
+          {product.logisticStatus === 'jit' && (
+            <span className="sf-label bg-amber-800 text-white px-2 py-0.5 rounded-sm text-[9px] font-bold tracking-wider shadow-sm">
+              ⚡ JIT (24-48h)
+            </span>
+          )}
+          {product.logisticStatus === 'bajo_pedido' && (
+            <span className="sf-label bg-purple-950 text-white px-2 py-0.5 rounded-sm text-[9px] font-bold tracking-wider shadow-sm">
+              ⏱ Fabricación a Medida
+            </span>
+          )}
           {product.isNew && (
             <span className="sf-label bg-[var(--sf-charcoal)] text-white px-2 py-0.5 rounded-sm text-[10px]">
               Nuevo

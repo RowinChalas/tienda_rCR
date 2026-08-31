@@ -2,6 +2,8 @@ import { Supplier } from '../../domain/models/Product';
 import { Order, OrderState, TriggeredByActor } from '../../domain/models/Order';
 import { CrmConversation, CrmMessage } from '../../domain/models/CrmConversation';
 import { PricingRule } from '../../domain/models/PricingRule';
+import { PlatformSettings } from '../../domain/models/PlatformSettings';
+import { CmsState, HeroSlideCms, NavMenuItem, SpaceScene, VisualCollection } from '../../domain/models/CmsContent';
 
 export interface ISupplierRepository {
   getAll(): Promise<Supplier[]>;
@@ -33,4 +35,21 @@ export interface IPricingRepository {
   getRuleById(id: string): Promise<PricingRule | null>;
   saveRule(rule: Omit<PricingRule, 'id' | 'createdAt'>): Promise<PricingRule>;
   deleteRule(id: string): Promise<boolean>;
+}
+
+export interface ISettingsRepository {
+  get(): Promise<PlatformSettings>;
+  update(settings: Partial<PlatformSettings>): Promise<PlatformSettings>;
+}
+
+export interface ICmsRepository {
+  getState(): Promise<CmsState>;
+  updateState(updates: Partial<CmsState>): Promise<CmsState>;
+  saveHeroSlide(slide: HeroSlideCms): Promise<HeroSlideCms>;
+  deleteHeroSlide(id: string): Promise<boolean>;
+  saveScene(scene: SpaceScene): Promise<SpaceScene>;
+  deleteScene(id: string): Promise<boolean>;
+  saveNavMenu(item: NavMenuItem): Promise<NavMenuItem>;
+  deleteNavMenu(id: string): Promise<boolean>;
+  saveCollection(collection: VisualCollection): Promise<VisualCollection>;
 }

@@ -36,6 +36,8 @@ export interface SupplierCost {
   updatedAt: string;
 }
 
+export type LogisticStatus = 'disponible_ya' | 'jit' | 'bajo_pedido';
+
 export interface Product {
   id: string;
   supplierId: string;
@@ -53,6 +55,9 @@ export interface Product {
   supplierCost?: SupplierCost; // Solo visible para rol Admin
   relatedProductIds?: string[];
   stockQuantity: number;
+  logisticStatus?: LogisticStatus; // 'disponible_ya' (Inmediato) | 'jit' (24-48h) | 'bajo_pedido' (15 días)
+  estimatedFulfillmentText?: string;
+  isFeaturedWeekly?: boolean; // Pieza destacada de la semana
   createdAt: string;
   updatedAt: string;
 }

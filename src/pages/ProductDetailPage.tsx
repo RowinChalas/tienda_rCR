@@ -98,8 +98,23 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, o
           className="flex flex-col"
         >
           {/* Brand + badges */}
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center gap-2.5 mb-3 flex-wrap">
             <p className="sf-label">{product.brand}</p>
+            {product.logisticStatus === 'disponible_ya' && (
+              <span className="sf-label bg-emerald-700 text-white px-2 py-0.5 rounded-sm text-[10px] font-bold">
+                ✦ Envío Inmediato
+              </span>
+            )}
+            {product.logisticStatus === 'jit' && (
+              <span className="sf-label bg-amber-800 text-white px-2 py-0.5 rounded-sm text-[10px] font-bold">
+                ⚡ Despacho en 24-48h (JIT)
+              </span>
+            )}
+            {product.logisticStatus === 'bajo_pedido' && (
+              <span className="sf-label bg-purple-950 text-white px-2 py-0.5 rounded-sm text-[10px] font-bold">
+                ⏱ Fabricación en 15 días
+              </span>
+            )}
             {product.isNew && (
               <span
                 className="sf-label px-2 py-0.5 rounded-sm"
@@ -134,9 +149,25 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, o
           </h1>
 
           {/* Category */}
-          <p className="sf-label mb-6" style={{ textTransform: 'capitalize' }}>
+          <p className="sf-label mb-4" style={{ textTransform: 'capitalize' }}>
             {product.category}
           </p>
+
+          {/* Logistical promise card */}
+          <div className="p-3 mb-6 rounded border bg-slate-50/70 border-slate-200/80 text-xs flex items-center gap-2.5">
+            <span className="text-base">📦</span>
+            <div>
+              <p className="font-semibold text-slate-800">
+                {product.logisticStatus === 'disponible_ya' && 'Disponibilidad Inmediata en Almacén'}
+                {product.logisticStatus === 'jit' && 'Producción Just-in-Time (Orquestación Directa de Taller)'}
+                {product.logisticStatus === 'bajo_pedido' && 'Pieza Artesanal Fabricada a Medida'}
+                {!product.logisticStatus && 'Despacho Rápido Just-in-Time'}
+              </p>
+              <p className="text-[11px] text-slate-500">
+                {product.estimatedFulfillmentText || 'Garantía de calidad BarverSuit y entrega coordinada.'}
+              </p>
+            </div>
+          </div>
 
           {/* Price */}
           <div className="mb-8 pb-8" style={{ borderBottom: '1px solid var(--sf-stone)' }}>
@@ -152,7 +183,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, o
               {product.priceFormatted}
             </p>
             <p className="text-xs mt-1" style={{ color: 'var(--sf-charcoal-35)', fontFamily: 'var(--font-ui)' }}>
-              Precio en pesos dominicanos • Incluye IVA
+              Precio en pesos dominicanos • Depósito flexible de seguridad disponible
             </p>
           </div>
 

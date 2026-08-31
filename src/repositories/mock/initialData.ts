@@ -2,6 +2,8 @@ import { Product, Supplier } from '../../domain/models/Product';
 import { Order } from '../../domain/models/Order';
 import { PricingRule } from '../../domain/models/PricingRule';
 import { CrmConversation, CrmMessage, Customer } from '../../domain/models/CrmConversation';
+import { PlatformSettings } from '../../domain/models/PlatformSettings';
+import { CmsState } from '../../domain/models/CmsContent';
 
 export const INITIAL_SUPPLIERS: Supplier[] = [
   {
@@ -486,4 +488,157 @@ export const INITIAL_MESSAGES: Record<string, CrmMessage[]> = {
       createdAt: '17:35',
     },
   ],
+};
+
+export const INITIAL_SETTINGS: PlatformSettings = {
+  id: 'settings_default',
+  companyName: 'BarverSuit',
+  slogan: 'Mobiliario artesanal dominicano. Diseño de autor, producción just-in-time.',
+  logoUrl: '',
+  contactPhone: '+1 (809) 400-0000',
+  contactWhatsapp: '+1 (809) 400-0000',
+  contactEmail: 'concierge@barversuit.com',
+  physicalAddress: 'Av. Winston Churchill #1092, Piantini, Santo Domingo, D.N.',
+  socialLinks: {
+    instagram: 'https://instagram.com/barversuit',
+    facebook: 'https://facebook.com/barversuit',
+    whatsapp: 'https://wa.me/18094000000',
+    pinterest: 'https://pinterest.com/barversuit',
+  },
+  footerText: 'Mobiliario artesanal dominicano. Producción bajo demanda, entrega directa del taller a tu hogar.',
+  copyrightText: '© 2026 BarverSuit. Todos los derechos reservados. República Dominicana · Santo Domingo',
+  currency: 'DOP',
+  taxRatePct: 18,
+  updatedAt: new Date().toISOString(),
+};
+
+export const INITIAL_CMS_STATE: CmsState = {
+  navMenus: [
+    { id: 'menu_1', label: 'Sala', targetCategory: 'sala', order: 1, isActive: true },
+    { id: 'menu_2', label: 'Comedor', targetCategory: 'comedor', order: 2, isActive: true },
+    { id: 'menu_3', label: 'Dormitorio', targetCategory: 'dormitorio', order: 3, isActive: true },
+    { id: 'menu_4', label: 'Oficina', targetCategory: 'oficina', order: 4, isActive: true },
+    { id: 'menu_5', label: 'Catálogo Completo', targetCategory: 'all', order: 5, isActive: true },
+  ],
+  heroSlides: [
+    {
+      id: 'slide_1',
+      imageUrl: '/images/heroes/hero-sala.jpg',
+      eyebrow: 'Colección 2026',
+      headline: 'La sala\nque imaginaste',
+      subline: 'Sofás, mesas y butacas de autor. Producción dominicana bajo demanda.',
+      ctaText: 'Explorar colección',
+      targetCategory: 'sala',
+      order: 1,
+      isActive: true,
+    },
+    {
+      id: 'slide_2',
+      imageUrl: '/images/heroes/hero-comedor.jpg',
+      eyebrow: 'Comedor & Cocina',
+      headline: 'Cada comida,\nuna escena',
+      subline: 'Mesas de mármol travertino y sillas esculpidas para momentos que importan.',
+      ctaText: 'Ver comedores',
+      targetCategory: 'comedor',
+      order: 2,
+      isActive: true,
+    },
+    {
+      id: 'slide_3',
+      imageUrl: '/images/heroes/hero-dormitorio.jpg',
+      eyebrow: 'Dormitorio',
+      headline: 'Tu descanso\ncomienza aquí',
+      subline: 'Camas, cabeceras y mesitas de noche. Materiales nobles, confort sin compromiso.',
+      ctaText: 'Ver dormitorios',
+      targetCategory: 'dormitorio',
+      order: 3,
+      isActive: true,
+    },
+  ],
+  spaceScenes: [
+    {
+      id: 'scene_sala_principal',
+      title: 'Sala de Estar Contemporánea',
+      subtitle: 'Nogal macizo dominicano, tapicería en lino gris piedra y travertino natural',
+      imageUrl: '/images/lookbook/sala-full.jpg',
+      order: 1,
+      isActive: true,
+      hotspots: [
+        {
+          id: 'hs_sofa_arco',
+          productId: 'sofa-arco-gris',
+          label: 'Sofá Arco — Gris Piedra',
+          x: 42.0,
+          y: 52.0,
+        },
+        {
+          id: 'hs_mesa_travertino',
+          productId: 'mesa-travertino-nogal',
+          label: 'Mesa Centro Travertino & Nogal',
+          x: 38.0,
+          y: 72.0,
+        },
+      ],
+    },
+    {
+      id: 'scene_comedor_autor',
+      title: 'Comedor de Autor & Luz Natural',
+      subtitle: 'Mesa de comedor escultórica con sillas tapizadas en bouclé camel',
+      imageUrl: '/images/heroes/hero-comedor.jpg',
+      order: 2,
+      isActive: true,
+      hotspots: [
+        {
+          id: 'hs_silla_luna',
+          productId: 'silla-luna-camel',
+          label: 'Silla Luna — Bouclé Camel',
+          x: 48.5,
+          y: 62.0,
+        },
+      ],
+    },
+  ],
+  visualCollections: [
+    {
+      id: 'col_sala',
+      categoryKey: 'sala',
+      title: 'Sala',
+      description: 'Sofás, butacas y mesas de centro',
+      coverImageUrl: '/images/categories/sala.jpg',
+      order: 1,
+      productIds: ['sofa-arco-gris', 'mesa-travertino-nogal'],
+      isActive: true,
+    },
+    {
+      id: 'col_comedor',
+      categoryKey: 'comedor',
+      title: 'Comedor',
+      description: 'Mesas y sillas de comedor',
+      coverImageUrl: '/images/categories/comedor.jpg',
+      order: 2,
+      productIds: ['silla-luna-camel'],
+      isActive: true,
+    },
+    {
+      id: 'col_dormitorio',
+      categoryKey: 'dormitorio',
+      title: 'Dormitorio',
+      description: 'Camas, cabeceras y mesitas',
+      coverImageUrl: '/images/heroes/hero-dormitorio.jpg',
+      order: 3,
+      productIds: ['cabecera-cuero-cognac'],
+      isActive: true,
+    },
+    {
+      id: 'col_oficina',
+      categoryKey: 'oficina',
+      title: 'Oficina',
+      description: 'Escritorios y sillas de trabajo',
+      coverImageUrl: '/images/heroes/hero-sala.jpg',
+      order: 4,
+      productIds: [],
+      isActive: true,
+    },
+  ],
+  weeklyFeaturedLimit: 4,
 };

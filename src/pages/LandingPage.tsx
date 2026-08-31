@@ -8,34 +8,12 @@ import { LookbookViewer } from '../modules/storefront/components/LookbookViewer'
 import { ProductCard } from '../modules/storefront/components/ProductCard';
 import { CATEGORIES, STOREFRONT_PRODUCTS, type StorefrontProduct } from '../modules/storefront/data/storefrontData';
 
+import { usePlatform } from '../context/PlatformContext';
+
 interface LandingPageProps {
   onNavigateCatalog:  (category?: string) => void;
   onProductSelect:    (product: StorefrontProduct) => void;
 }
-
-const HERO_SLIDES = [
-  {
-    image:    '/images/heroes/hero-sala.jpg',
-    eyebrow:  'Colección 2026',
-    headline: 'La sala\nque imaginaste',
-    subline:  'Sofás, mesas y butacas de autor. Producción dominicana bajo demanda.',
-    cta:      'Explorar colección',
-  },
-  {
-    image:    '/images/heroes/hero-comedor.jpg',
-    eyebrow:  'Comedor & Cocina',
-    headline: 'Cada comida,\nuna escena',
-    subline:  'Mesas de mármol travertino y sillas esculpidas para momentos que importan.',
-    cta:      'Ver comedores',
-  },
-  {
-    image:    '/images/heroes/hero-dormitorio.jpg',
-    eyebrow:  'Dormitorio',
-    headline: 'Tu descanso\ncomienza aquí',
-    subline:  'Camas, cabeceras y mesitas de noche. Materiales nobles, confort sin compromiso.',
-    cta:      'Ver dormitorios',
-  },
-];
 
 const VALUES = [
   { icon: Hammer, title: 'Hecho a mano',   desc: 'Cada pieza fabricada en talleres dominicanos por artesanos calificados.' },
@@ -43,21 +21,52 @@ const VALUES = [
   { icon: Star,   title: 'Just-in-Time',   desc: 'Fabricamos al recibir tu pedido. Sin inventario, sin desperdicio.' },
 ];
 
-const featuredProducts = STOREFRONT_PRODUCTS.filter(p => p.isBestseller || p.isNew).slice(0, 4);
-
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateCatalog, onProductSelect }) => {
-  const heroSlides = HERO_SLIDES.map((s, i) => ({
-    ...s,
-    onCta: () => onNavigateCatalog(['all', 'comedor', 'dormitorio'][i]),
+  const { cms, settings } = usePlatform();
+
+  // 1. Dynamic Hero Slides from CMS
+  const activeHeroSlides = cms.heroSlides
+    .filter((s) => s.isActive)
+    .sort((a, b) => a.order - b.order);
+
+  const heroSlides = (activeHeroSlides.length > 0 ? activeHeroSlides : [
+    {
+      id: 'default',
+      imageUrl: '/images/heroes/hero-sala.jpg',
+      eyebrow: 'Colección 2026',
+      headline: 'La sala\nque imaginaste',
+      subline: 'Sofás, mesas y butacas de autor. Producción dominicana bajo demanda.',
+      ctaText: 'Explorar colección',
+      targetCategory: 'sala',
+      order: 1,
+      isActive: true,
+    }
+  ]).map((s) => ({
+    image: s.imageUrl,
+    eyebrow: s.eyebrow,
+    headline: s.headline,
+    subline: s.subline,
+    cta: s.ctaText,
+    onCta: () => onNavigateCatalog(s.targetCategory),
   }));
+
+  // 2. Dynamic Visual Collections ("Cada rincón, una historia")
+  const activeCollections = cms.visualCollections
+    .filter((c) => c.isActive)
+    .sort((a, b) => a.order - b.order);
+
+  // 3. Dynamic "Piezas de la semana" (Featured)
+  const featuredProducts = STOREFRONT_PRODUCTS.filter(
+    (p) => p.isFeaturedWeekly || p.isBestseller || p.isNew
+  ).slice(0, cms.weeklyFeaturedLimit || 4);
 
   return (
     <div className="sf-root" style={{ background: 'var(--sf-bg)' }}>
 
-      {/* ── 1. HERO SLIDER ─────────────────────────────── */}
+      {/* ── 1. HERO SLIDER (CMS DINÁMICO) ─────────────────────────────── */}
       <HeroSlider slides={heroSlides} />
 
-      {/* ── 2. CATEGORY GRID ──────────────────────────── */}
+      {/* ── 2. CATEGORY GRID ("CADA RINCÓN, UNA HISTORIA" CMS) ──────────────────────────── */}
       <section className="max-w-7xl mx-auto px-6 md:px-12 py-20">
         <div className="flex items-end justify-between mb-10">
           <div>
@@ -85,20 +94,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateCatalog, onP
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          {CATEGORIES.map((cat, i) => (
+          {(activeCollections.length > 0 ? activeCollections : CATEGORIES.map((cat, i) => ({
+            id: cat.id,
+            categoryKey: cat.id,
+            title: cat.label,
+            description: cat.description,
+            coverImageUrl: cat.cover,
+            order: i + 1,
+            productIds: [],
+            isActive: true,
+          }))).map((col, i) => (
             <motion.button
-              key={cat.id}
+              key={col.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ type: 'spring', stiffness: 260, damping: 24, delay: i * 0.07 }}
-              onClick={() => onNavigateCatalog(cat.id)}
+              onClick={() => onNavigateCatalog(col.categoryKey)}
               className="sf-cat-card group relative text-left rounded-sm overflow-hidden"
               style={{ aspectRatio: '3/4' }}
             >
               <img
-                src={cat.cover}
-                alt={cat.label}
+                src={col.coverImageUrl}
+                alt={col.title}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
@@ -107,13 +125,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateCatalog, onP
                   className="text-white font-medium text-sm mb-0.5"
                   style={{ fontFamily: 'var(--font-ui)' }}
                 >
-                  {cat.label}
+                  {col.title}
                 </p>
                 <p
                   className="text-white/70 text-xs"
                   style={{ fontFamily: 'var(--font-ui)' }}
                 >
-                  {cat.description}
+                  {col.description}
                 </p>
               </div>
             </motion.button>
@@ -121,7 +139,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateCatalog, onP
         </div>
       </section>
 
-      {/* ── 3. FEATURED PRODUCTS ──────────────────────── */}
+      {/* ── 3. FEATURED PRODUCTS (PIEZAS DE LA SEMANA CMS) ──────────────────────── */}
       <section
         className="py-20"
         style={{ background: 'var(--sf-bg-alt)' }}
@@ -224,7 +242,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateCatalog, onP
                 className="mb-8 leading-relaxed"
                 style={{ color: 'rgba(255,255,255,0.65)', fontFamily: 'var(--font-ui)', fontSize: '0.9375rem' }}
               >
-                BarverSuit es un modelo just-in-time: no hay almacén, no hay inventario muerto.
+                {settings.companyName} es un modelo just-in-time: no hay almacén, no hay inventario muerto.
                 Cada pieza se fabrica al recibir tu pedido, con los mejores materiales dominicanos
                 seleccionados por nuestro equipo de diseño.
               </p>

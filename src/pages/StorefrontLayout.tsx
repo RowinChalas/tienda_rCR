@@ -8,6 +8,8 @@ import { CatalogPage } from './CatalogPage';
 import { ProductDetailPage } from './ProductDetailPage';
 import type { StorefrontProduct } from '../modules/storefront/data/storefrontData';
 
+import { usePlatform } from '../context/PlatformContext';
+
 type StorefrontView = 'landing' | 'catalog' | 'product';
 
 interface StorefrontLayoutProps {
@@ -15,6 +17,7 @@ interface StorefrontLayoutProps {
 }
 
 export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin }) => {
+  const { settings, cms } = usePlatform();
   const [view, setView] = useState<StorefrontView>('landing');
   const [selectedProduct, setSelectedProduct] = useState<StorefrontProduct | null>(null);
   const [catalogCategory, setCatalogCategory] = useState<string>('all');
@@ -47,13 +50,8 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const NAV_LINKS = [
-    { label: 'Sala',       onClick: () => navigateCatalog('sala') },
-    { label: 'Comedor',    onClick: () => navigateCatalog('comedor') },
-    { label: 'Dormitorio', onClick: () => navigateCatalog('dormitorio') },
-    { label: 'Oficina',    onClick: () => navigateCatalog('oficina') },
-    { label: 'Catálogo',   onClick: () => navigateCatalog('all') },
-  ];
+  // Dinámico desde el CMS o fallback
+  const activeNavMenus = cms.navMenus.filter((m) => m.isActive).sort((a, b) => a.order - b.order);
 
   const isHero = view === 'landing' && !isScrolled;
 
@@ -70,11 +68,11 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
         }}
       >
         <nav className="max-w-7xl mx-auto px-6 md:px-12 h-16 flex items-center gap-6">
-          {/* Logo */}
+          {/* Logo / Company Name */}
           <button
             onClick={() => { setView('landing'); window.scrollTo({ top: 0 }); }}
             className="flex-shrink-0 mr-4"
-            aria-label="BarverSuit — Ir al inicio"
+            aria-label={`${settings.companyName} — Ir al inicio`}
           >
             <span
               style={{
@@ -85,16 +83,16 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
                 color: isHero ? 'white' : 'var(--sf-charcoal)',
               }}
             >
-              BarverSuit
+              {settings.companyName}
             </span>
           </button>
 
-          {/* Desktop nav links */}
+          {/* Desktop nav links dinámicos desde el CMS */}
           <div className="hidden md:flex items-center gap-6 flex-1">
-            {NAV_LINKS.map(link => (
+            {activeNavMenus.map((link) => (
               <button
-                key={link.label}
-                onClick={link.onClick}
+                key={link.id}
+                onClick={() => navigateCatalog(link.targetCategory)}
                 className="text-xs font-medium transition-colors hover:opacity-70"
                 style={{
                   color: isHero ? 'rgba(255,255,255,0.85)' : 'var(--sf-charcoal-60)',
@@ -183,10 +181,10 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
               style={{ background: 'var(--sf-surface)', borderBottom: '1px solid var(--sf-stone)' }}
             >
               <div className="px-6 py-4 flex flex-col gap-1">
-                {NAV_LINKS.map(link => (
+                {activeNavMenus.map((link) => (
                   <button
-                    key={link.label}
-                    onClick={() => { link.onClick(); setIsMobileMenuOpen(false); }}
+                    key={link.id}
+                    onClick={() => { navigateCatalog(link.targetCategory); setIsMobileMenuOpen(false); }}
                     className="flex items-center justify-between py-3 text-sm font-medium"
                     style={{
                       color: 'var(--sf-charcoal)',
@@ -266,7 +264,7 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
         </AnimatePresence>
       </main>
 
-      {/* ─── Footer ─────────────────────────────────────── */}
+      {/* ─── Footer Dinámico ─────────────────────────────────────── */}
       <footer
         className="py-14 mt-0"
         style={{ background: 'var(--sf-bg-alt)', borderTop: '1px solid var(--sf-stone)' }}
@@ -278,32 +276,35 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
               className="mb-3"
               style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--sf-charcoal)' }}
             >
-              BarverSuit
+              {settings.companyName}
             </p>
             <p
-              className="text-xs leading-relaxed"
+              className="text-xs leading-relaxed mb-3"
               style={{ color: 'var(--sf-charcoal-60)', fontFamily: 'var(--font-ui)', maxWidth: 220 }}
             >
-              Mobiliario artesanal dominicano. Diseño de autor, producción just-in-time.
+              {settings.footerText}
+            </p>
+            <p className="text-[11px]" style={{ color: 'var(--sf-charcoal-35)' }}>
+              📍 {settings.physicalAddress}
             </p>
           </div>
 
           {[
             { heading: 'Colección', links: ['Sala', 'Comedor', 'Dormitorio', 'Oficina'] },
             { heading: 'Empresa',   links: ['Nuestra historia', 'Talleres', 'Sostenibilidad', 'Contacto'] },
-            { heading: 'Ayuda',     links: ['Proceso de compra', 'Tiempos de entrega', 'Devoluciones', 'FAQ'] },
+            { heading: 'Atención',  links: [`WhatsApp: ${settings.contactWhatsapp}`, `Email: ${settings.contactEmail}`, 'FAQ', 'Envíos JIT'] },
           ].map(col => (
             <div key={col.heading}>
               <p className="sf-label mb-4">{col.heading}</p>
               <ul className="flex flex-col gap-2.5">
                 {col.links.map(link => (
                   <li key={link}>
-                    <button
-                      className="text-xs hover:text-[var(--sf-charcoal)] transition-colors text-left"
-                      style={{ color: 'var(--sf-charcoal-60)', fontFamily: 'var(--font-ui)', background: 'none', border: 'none' }}
+                    <span
+                      className="text-xs hover:text-[var(--sf-charcoal)] transition-colors text-left select-none cursor-pointer"
+                      style={{ color: 'var(--sf-charcoal-60)', fontFamily: 'var(--font-ui)' }}
                     >
                       {link}
-                    </button>
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -316,10 +317,10 @@ export const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ onGoAdmin })
           style={{ borderTop: '1px solid var(--sf-stone)' }}
         >
           <p className="text-xs" style={{ color: 'var(--sf-charcoal-35)', fontFamily: 'var(--font-ui)' }}>
-            © 2026 BarverSuit. Todos los derechos reservados.
+            {settings.copyrightText}
           </p>
           <p className="text-xs" style={{ color: 'var(--sf-charcoal-35)', fontFamily: 'var(--font-ui)' }}>
-            República Dominicana · Santo Domingo
+            {settings.slogan}
           </p>
         </div>
       </footer>

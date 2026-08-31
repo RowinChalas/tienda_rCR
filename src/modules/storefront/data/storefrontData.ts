@@ -1,6 +1,8 @@
 // src/modules/storefront/data/storefrontData.ts
 // Datos del catálogo público — completamente desacoplados del admin
 
+export type StorefrontLogisticStatus = 'disponible_ya' | 'jit' | 'bajo_pedido';
+
 export interface StorefrontProduct {
   id: string;
   slug: string;
@@ -18,7 +20,10 @@ export interface StorefrontProduct {
   ambientImage?: string;
   isNew?: boolean;
   isBestseller?: boolean;
+  isFeaturedWeekly?: boolean;
   inStock: boolean;
+  logisticStatus?: StorefrontLogisticStatus;
+  estimatedFulfillmentText?: string;
 }
 
 export type StorefrontCategory =
@@ -66,7 +71,10 @@ export const STOREFRONT_PRODUCTS: StorefrontProduct[] = [
     ],
     ambientImage: '/images/heroes/hero-sala.jpg',
     isBestseller: true,
+    isFeaturedWeekly: true,
     inStock: true,
+    logisticStatus: 'jit',
+    estimatedFulfillmentText: '⚡ Despacho en 24-48h (JIT)',
   },
   {
     id: 'mesa-travertino-nogal',
@@ -86,7 +94,10 @@ export const STOREFRONT_PRODUCTS: StorefrontProduct[] = [
     ],
     ambientImage: '/images/lookbook/sala-full.jpg',
     isNew: true,
+    isFeaturedWeekly: true,
     inStock: true,
+    logisticStatus: 'disponible_ya',
+    estimatedFulfillmentText: '✦ Envío Inmediato',
   },
   {
     id: 'silla-luna-camel',
@@ -105,7 +116,10 @@ export const STOREFRONT_PRODUCTS: StorefrontProduct[] = [
     ],
     ambientImage: '/images/heroes/hero-comedor.jpg',
     isNew: true,
+    isFeaturedWeekly: true,
     inStock: true,
+    logisticStatus: 'disponible_ya',
+    estimatedFulfillmentText: '✦ Envío Inmediato',
   },
   {
     id: 'cabecera-cuero-cognac',
@@ -123,7 +137,10 @@ export const STOREFRONT_PRODUCTS: StorefrontProduct[] = [
       '/images/products/cabecera-01.jpg',
     ],
     ambientImage: '/images/heroes/hero-dormitorio.jpg',
+    isFeaturedWeekly: true,
     inStock: true,
+    logisticStatus: 'bajo_pedido',
+    estimatedFulfillmentText: '⏱ Fabricación en 15 días',
   },
 ];
 
