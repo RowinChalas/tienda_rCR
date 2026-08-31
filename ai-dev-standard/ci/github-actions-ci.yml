@@ -1,0 +1,106 @@
+# .github/workflows/ci.yml
+# Repite EXACTAMENTE las mismas verificaciones que los hooks de Claude Code
+# (.claude/hooks/format_and_lint.sh y require_test_evidence.sh), pero corre en cada
+# push/PR sin depender de que el cambio haya pasado por una sesión de Claude Code.
+# Ajusta las rutas (paths) y comandos a la estructura real del repo.
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # ---------------------------------------------------------------------
+  # Backend .NET — quitar este job si el proyecto no usa .NET
+  # ---------------------------------------------------------------------
+  backend-dotnet:
+    name: Backend (.NET)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend # ajustar a la carpeta real
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restaurar dependencias
+        run: dotnet restore
+
+      - name: Verificar formato (falla si hay diffs sin aplicar)
+        run: dotnet format --verify-no-changes --no-restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Tests
+        run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx"
+
+      - name: Publicar resultados de tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-test-results
+          path: "**/test-results.trx"
+
+  # ---------------------------------------------------------------------
+  # Frontend Node/React — quitar este job si el proyecto no usa Node
+  # ---------------------------------------------------------------------
+  frontend-node:
+    name: Frontend (Node/React)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend # ajustar a la carpeta real
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: ./frontend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint
+        run: npx eslint .
+
+      - name: Verificar formato
+        run: npx prettier --check .
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Tests
+        run: npm test -- --run
+
+      - name: Build
+        run: npm run build
+
+  # ---------------------------------------------------------------------
+  # Seguridad: escaneo de dependencias vulnerables (punto 5 pendiente del kit)
+  # ---------------------------------------------------------------------
+  dependency-audit:
+    name: Auditoría de dependencias
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auditoría npm (si aplica)
+        working-directory: ./frontend
+        run: npm audit --audit-level=high
+        continue-on-error: true # cambiar a false cuando el equipo esté listo para bloquear por esto
+
+      - name: Auditoría NuGet (si aplica)
+        working-directory: ./backend
+        run: dotnet list package --vulnerable --include-transitive
+        continue-on-error: true

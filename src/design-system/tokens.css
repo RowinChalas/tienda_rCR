@@ -1,0 +1,161 @@
+/* tokens.css — Design Tokens & Aesthetics for BarverSuit Furniture Retail */
+:root {
+  /* Brand Warm Walnut & Woodcraft Palettes */
+  --color-brand-primary: #ba855d;
+  --color-brand-primary-hover: #a36d49;
+  --color-brand-primary-light: #ebdccb;
+  --color-brand-primary-dark: #6c4331;
+  --color-brand-accent-gold: #d4af37;
+  --color-brand-accent-terracotta: #c85a32;
+  --color-brand-accent-forest: #2d5a43;
+
+  /* Surfaces & Dark Mode Layers */
+  --bg-app: #070a0f;
+  --bg-surface-primary: #0f172a;
+  --bg-surface-secondary: #172033;
+  --bg-surface-tertiary: #1e293b;
+  --bg-surface-elevated: #243048;
+  --bg-glass: rgba(15, 23, 42, 0.75);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-focus: rgba(186, 133, 93, 0.5);
+
+  /* Typography Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #0f172a;
+
+  /* Semantic Status Colors */
+  --color-status-draft: #94a3b8;
+  --color-status-review: #f59e0b;
+  --color-status-published: #10b981;
+  --color-status-soldout: #ef4444;
+  --color-status-softlock: #8b5cf6;
+  --color-status-dispatch: #3b82f6;
+
+  /* Elevations & Shadows (Dark Admin) */
+  --shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
+  --shadow-elevated: 0 12px 32px -4px rgba(0, 0, 0, 0.6);
+  --shadow-glow-brand: 0 0 25px -4px rgba(186, 133, 93, 0.25);
+  --shadow-glow-purple: 0 0 25px -4px rgba(139, 92, 246, 0.3);
+
+  /* Spring Transitions (Emil Kowalski Physics) */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ─── Storefront Editorial Light Theme ─── */
+  /* Paleta off-white cálida inspirada en guud.com/casamia */
+  --sf-bg:           #F7F5F2;
+  --sf-bg-alt:       #F0EDE9;
+  --sf-surface:      #FFFFFF;
+  --sf-stone:        #E8E4DD;
+  --sf-stone-strong: #D4CFC7;
+  --sf-charcoal:     #1A1A18;
+  --sf-charcoal-60:  rgba(26,26,24, 0.60);
+  --sf-charcoal-35:  rgba(26,26,24, 0.35);
+  --sf-madera:       #8B6F47;
+  --sf-madera-light: #C4A882;
+  --sf-madera-pale:  #F2EBE1;
+
+  /* Tipografía editorial */
+  --font-editorial:  'Cormorant Garamond', Georgia, serif;
+  --font-ui:         'DM Sans', 'Inter', system-ui, sans-serif;
+
+  /* Elevaciones Light Mode */
+  --sf-shadow-xs:      0 1px 2px 0 rgba(0,0,0,0.04), 0 1px 3px 0 rgba(0,0,0,0.06);
+  --sf-shadow-sm:      0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.04);
+  --sf-shadow-md:      0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+  --sf-shadow-lg:      0 20px 25px -5px rgba(0,0,0,0.10), 0 8px 10px -6px rgba(0,0,0,0.06);
+  --sf-shadow-product: 0 2px 12px 0 rgba(139, 111, 71, 0.12);
+}
+
+/* ─── Admin Visual Themes (Aurex & Helios) ─── */
+.admin-theme-aurex {
+  --admin-bg: #f3f4f6;
+  --admin-card: #ffffff;
+  --admin-card-alt: #f9fafb;
+  --admin-border: rgba(0, 0, 0, 0.06);
+  --admin-border-strong: rgba(0, 0, 0, 0.12);
+  --admin-text-primary: #111827;
+  --admin-text-secondary: #6b7280;
+  --admin-text-inverse: #ffffff;
+  --admin-accent: #111827; /* Negro/Oscuro */
+  --admin-accent-hover: #374151;
+  --admin-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+  --admin-radius: 28px;
+  --admin-radius-sm: 16px;
+  --admin-radius-xs: 8px;
+  --admin-badge-bg: rgba(0, 0, 0, 0.05);
+  --admin-badge-text: #374151;
+  --admin-backdrop: none;
+  --admin-hover: rgba(0, 0, 0, 0.03);
+}
+
+.admin-theme-helios {
+  --admin-bg: #121214;
+  --admin-card: rgba(30, 30, 34, 0.7);
+  --admin-card-alt: rgba(45, 45, 52, 0.6);
+  --admin-border: rgba(255, 255, 255, 0.05);
+  --admin-border-strong: rgba(255, 255, 255, 0.15);
+  --admin-text-primary: #f9fafb;
+  --admin-text-secondary: #9ca3af;
+  --admin-text-inverse: #ffffff;
+  --admin-accent: linear-gradient(135deg, #a855f7, #ec4899); /* Purple to Pink glow */
+  --admin-accent-hover: linear-gradient(135deg, #9333ea, #db2777);
+  --admin-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --admin-radius: 20px;
+  --admin-radius-sm: 12px;
+  --admin-radius-xs: 8px;
+  --admin-badge-bg: rgba(255, 255, 255, 0.1);
+  --admin-badge-text: #e5e7eb;
+  --admin-backdrop: blur(24px);
+  --admin-hover: rgba(255, 255, 255, 0.05);
+}
+
+
+/* Glassmorphism & Visual Polish */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+}
+
+.glass-panel-elevated {
+  background: rgba(23, 32, 51, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-elevated);
+}
+
+.glow-brand {
+  box-shadow: var(--shadow-glow-brand);
+}
+
+.glow-purple {
+  box-shadow: var(--shadow-glow-purple);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}

@@ -1,0 +1,31 @@
+#!/bin/bash
+# .githooks/pre-commit — hook nativo de Git, sin depender de npm/husky.
+# Útil para proyectos .NET-only o cualquier repo sin Node.
+#
+# Instalación (una sola vez por clon del repo):
+#   git config core.hooksPath .githooks
+#   chmod +x .githooks/pre-commit
+#
+# A partir de ahí, corre automáticamente en cada `git commit`.
+
+set -e
+
+echo "Pre-commit: verificando formato..."
+
+# ---- STACK: .NET ----
+if [ -f "*.sln" ] || ls *.sln >/dev/null 2>&1; then
+  dotnet format --verify-no-changes --no-restore
+  if [ $? -ne 0 ]; then
+    echo ""
+    echo "El código no está formateado. Corre 'dotnet format' y vuelve a intentar."
+    exit 1
+  fi
+fi
+
+echo "Pre-commit: corriendo pruebas rápidas..."
+
+# ---- STACK: .NET ----
+# dotnet test --filter "Category!=Slow" || { echo "Pruebas fallaron"; exit 1; }
+
+echo "Pre-commit OK."
+exit 0

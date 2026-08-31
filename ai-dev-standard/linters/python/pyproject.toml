@@ -1,0 +1,17 @@
+# pyproject.toml — pega esta sección en el pyproject.toml del proyecto (o úsalo completo si es nuevo)
+# pip install ruff black
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C90"]
+ignore = []
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]

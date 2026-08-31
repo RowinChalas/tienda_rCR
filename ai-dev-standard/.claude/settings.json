@@ -1,0 +1,38 @@
+{
+  "_readme": "Ajusta los comandos entre <> a los reales de tu stack antes de usar. Ver README.md del kit para ejemplos por stack (.NET / Node).",
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/block_protected_paths.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/format_and_lint.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/require_test_evidence.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
